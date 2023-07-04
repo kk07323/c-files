@@ -1,0 +1,27 @@
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+public class Program
+{
+    private static readonly HttpClient client = new HttpClient();
+
+    public static async Task Main(string[] args)
+    {
+        // Call the first API and get the response
+        string firstApiUrl = "https://api.example.com/first-api";
+        string firstApiResponse = await client.GetStringAsync(firstApiUrl);
+
+        // Post the response to the second API
+        string secondApiUrl = "https://api.example.com/second-api";
+        await PostDataAsync(secondApiUrl, firstApiResponse);
+
+        Console.WriteLine("Data posted successfully to the second API.");
+    }
+
+    private static async Task PostDataAsync(string url, string data)
+    {
+        var content = new StringContent(data);
+        await client.PostAsync(url, content);
+    }
+}
