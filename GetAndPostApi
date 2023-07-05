@@ -1,0 +1,43 @@
+using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+
+namespace YourWebApi.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class YourController : ControllerBase
+    {
+        private readonly HttpClient _httpClient;
+
+        public YourController()
+        {
+            _httpClient = new HttpClient();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            string firstApiUrl = "https://api.example.com/first-api";
+            string secondApiUrl = "https://api.example.com/second-api";
+
+            // Call the first API and get the response
+            HttpResponseMessage firstResponse = await _httpClient.GetAsync(firstApiUrl);
+            if (!firstResponse.IsSuccessStatusCode)
+            {
+                return StatusCode((int)firstResponse.StatusCode);
+            }
+
+            string firstResponseBody = await firstResponse.Content.ReadAsStringAsync();
+
+            // Post the response to the second API
+            HttpResponseMessage secondResponse = await _httpClient.PostAsync(secondApiUrl, new StringContent(firstResponseBody));
+            if (!secondResponse.IsSuccessStatusCode)
+            {
+                return StatusCode((int)secondResponse.StatusCode);
+            }
+
+            return Ok("Data posted successfully to the second API.");
+        }
+    }
+}
